@@ -1,0 +1,18 @@
+advanced-database-portfolio/
+├── portfolio-1-database-design/
+│   ├── schema.sql
+│   ├── erd_diagram.png
+│   └── normalisation_report.md
+├── portfolio-2-query-optimisation/
+│   ├── queries.sql
+│   ├── indexes.sql
+│   └── performance_analysis.md
+├── portfolio-3-transactions-concurrency/
+│   ├── transaction_isolation.sql
+│   └── concurrency_tests.sql
+├── portfolio-4-nosql/
+│   ├── mongo_schema.js
+│   └── nosql_queries.js
+├── portfolio-5-distributed-cloud/
+│   └── cloud_sharding_strategy.md
+└── README.md
