@@ -1,4 +1,5 @@
--- Create Database Schema
+-- Database Schema for St. Jude Health Information System
+
 CREATE TABLE Department (
     DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
     DepartmentName VARCHAR(100) NOT NULL
