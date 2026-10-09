@@ -3,7 +3,7 @@
 
 **Student Name:** Dagogo_Faith  
 **Matric Number:** 301914344  
-**Case Study System:** St. Jude Clinical Health Information System (HIS)
+**Case Study System:**Hospital/clinical Information System
 
 ## Repository Navigation
 - `/portfolio-1-database-design/`: Relational Schema and Normalisation Report
