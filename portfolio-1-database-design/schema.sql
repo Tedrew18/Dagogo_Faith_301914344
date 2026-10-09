@@ -1,0 +1,63 @@
+-- Database Schema for St. Jude Health Information System
+
+CREATE TABLE Department (
+    DepartmentID INT PRIMARY KEY AUTO_INCREMENT,
+    DepartmentName VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Doctor (
+    DoctorID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Specialization VARCHAR(100) NOT NULL,
+    DepartmentID INT NOT NULL,
+    FOREIGN KEY (DepartmentID) REFERENCES Department(DepartmentID)
+);
+
+CREATE TABLE Patient (
+    PatientID INT PRIMARY KEY AUTO_INCREMENT,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Gender CHAR(1) CHECK (Gender IN ('M', 'F')),
+    DOB DATE NOT NULL,
+    Phone VARCHAR(20) UNIQUE,
+    Address TEXT
+);
+
+CREATE TABLE Appointment (
+    AppointmentID INT PRIMARY KEY AUTO_INCREMENT,
+    PatientID INT NOT NULL,
+    DoctorID INT NOT NULL,
+    AppointmentDate DATETIME NOT NULL,
+    Status VARCHAR(20) DEFAULT 'Scheduled',
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+    FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
+);
+
+CREATE TABLE MedicalRecord (
+    RecordID INT PRIMARY KEY AUTO_INCREMENT,
+    PatientID INT NOT NULL,
+    DoctorID INT NOT NULL,
+    Diagnosis TEXT NOT NULL,
+    Treatment TEXT NOT NULL,
+    RecordDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+    FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
+);
+
+CREATE TABLE Prescription (
+    PrescriptionID INT PRIMARY KEY AUTO_INCREMENT,
+    RecordID INT NOT NULL,
+    Medication VARCHAR(100) NOT NULL,
+    Dosage VARCHAR(50) NOT NULL,
+    FOREIGN KEY (RecordID) REFERENCES MedicalRecord(RecordID)
+);
+
+CREATE TABLE Laboratory (
+    LabID INT PRIMARY KEY AUTO_INCREMENT,
+    RecordID INT NOT NULL,
+    TestName VARCHAR(100) NOT NULL,
+    Result TEXT,
+    TestDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (RecordID) REFERENCES MedicalRecord(RecordID)
+);
