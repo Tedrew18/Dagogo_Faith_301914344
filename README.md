@@ -13,6 +13,6 @@
 - `/portfolio-5-distributed-cloud/`: Cloud Architecture and Sharding Strategy
 
 ## AI Use Declaration
-- **Tool:** Gemini (Google DeepMind) and Microsoft Copilot
+- **Tool:** Gemini (Google DeepMind), Microsoft Copilot and MySQL workbench
 - **Usage:** Used for refining SQL schema design, structuring MongoDB documents, and organizing portfolio files.
 - **Verification:** All scripts were verified, deployed, and tested locally.
