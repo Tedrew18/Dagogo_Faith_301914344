@@ -1,60 +1,69 @@
-
--- MySQL 8.0+ complete runnable example
--- Run this in MySQL Workbench or another MySQL client.
-
-CREATE DATABASE IF NOT EXISTS HospitalDB;
+-- 1. Create the database
+DROP DATABASE IF EXISTS HospitalDB;
+CREATE DATABASE HospitalDB;
 USE HospitalDB;
 
--- Reset these demo tables so the script can be rerun.
-DROP TABLE IF EXISTS Prescription;
-DROP TABLE IF EXISTS MedicalRecord;
-DROP TABLE IF EXISTS Patient;
-
+-- 2. Create the Patient table
 CREATE TABLE Patient (
-    PatientID INT NOT NULL AUTO_INCREMENT,
+    PatientID INT AUTO_INCREMENT PRIMARY KEY,
     FirstName VARCHAR(100) NOT NULL,
-    LastName VARCHAR(100) NOT NULL,
-    PRIMARY KEY (PatientID)
-) ENGINE=InnoDB;
+    LastName VARCHAR(100) NOT NULL
+) ENGINE = InnoDB;
 
+-- 3. Create the MedicalRecord table
 CREATE TABLE MedicalRecord (
-    RecordID INT NOT NULL AUTO_INCREMENT,
+    RecordID INT AUTO_INCREMENT PRIMARY KEY,
     PatientID INT NOT NULL,
     RecordDate DATETIME NOT NULL,
     Diagnosis VARCHAR(255) NOT NULL,
-    PRIMARY KEY (RecordID),
-    CONSTRAINT fk_medicalrecord_patient
-        FOREIGN KEY (PatientID) REFERENCES Patient (PatientID)
-) ENGINE=InnoDB;
 
+    CONSTRAINT fk_medicalrecord_patient
+        FOREIGN KEY (PatientID)
+        REFERENCES Patient(PatientID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE = InnoDB;
+
+-- 4. Create the Prescription table
 CREATE TABLE Prescription (
-    PrescriptionID INT NOT NULL AUTO_INCREMENT,
+    PrescriptionID INT AUTO_INCREMENT PRIMARY KEY,
     RecordID INT NOT NULL,
     Medication VARCHAR(255) NOT NULL,
-    PRIMARY KEY (PrescriptionID),
+
     CONSTRAINT fk_prescription_record
-        FOREIGN KEY (RecordID) REFERENCES MedicalRecord (RecordID)
-) ENGINE=InnoDB;
+        FOREIGN KEY (RecordID)
+        REFERENCES MedicalRecord(RecordID)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+) ENGINE = InnoDB;
 
--- Sample data
+-- 5. Insert sample patients
 INSERT INTO Patient (FirstName, LastName) VALUES
-('Ada', 'Okafor'),
-('John', 'Bello'),
-('Mary', 'James');
+('John', 'Doe'),
+('Mary', 'Smith'),
+('David', 'Johnson'),
+('Grace', 'Williams'),
+('Peter', 'Brown');
 
-INSERT INTO MedicalRecord (PatientID, RecordDate, Diagnosis) VALUES
-(1, '2026-02-10 09:30:00', 'Malaria'),
-(2, '2026-06-15 14:00:00', 'Hypertension'),
-(3, '2025-12-20 10:00:00', 'Flu'),
-(1, '2026-10-07 23:59:00', 'Routine checkup');
+-- 6. Insert sample medical records
+INSERT INTO MedicalRecord
+    (PatientID, RecordDate, Diagnosis)
+VALUES
+(1, '2026-01-15 09:30:00', 'Malaria'),
+(2, '2026-02-20 10:00:00', 'Typhoid'),
+(3, '2026-04-12 14:15:00', 'Hypertension'),
+(4, '2026-07-05 11:45:00', 'Diabetes'),
+(5, '2026-10-07 16:30:00', 'Common cold');
 
+-- 7. Insert sample prescriptions
 INSERT INTO Prescription (RecordID, Medication) VALUES
 (1, 'Artemether-Lumefantrine'),
-(2, 'Amlodipine'),
-(3, 'Paracetamol'),
-(4, 'Vitamin D');
+(2, 'Ciprofloxacin'),
+(3, 'Amlodipine'),
+(4, 'Metformin'),
+(5, 'Paracetamol');
 
--- Query 1: execution plan before adding the performance indexes
+
 EXPLAIN
 SELECT
     p.FirstName,
@@ -67,20 +76,16 @@ INNER JOIN MedicalRecord AS m
 INNER JOIN Prescription AS pr
     ON m.RecordID = pr.RecordID
 WHERE m.RecordDate >= '2026-01-01'
-  AND m.RecordDate <  '2026-10-08';
+  AND m.RecordDate < '2026-10-08';
 
--- Create indexes. The primary keys already index PatientID and RecordID
--- on Patient and MedicalRecord, respectively.
+
 CREATE INDEX idx_medicalrecord_date
     ON MedicalRecord (RecordDate);
 
-CREATE INDEX idx_prescription_record
-    ON Prescription (RecordID);
+-- Update table statistics for the optimizer
+ANALYZE TABLE Patient, MedicalRecord, Prescription;
 
-CREATE INDEX idx_medicalrecord_patient
-    ON MedicalRecord (PatientID);
 
--- Query 2: execution plan after adding the indexes
 EXPLAIN
 SELECT
     p.FirstName,
@@ -93,9 +98,16 @@ INNER JOIN MedicalRecord AS m
 INNER JOIN Prescription AS pr
     ON m.RecordID = pr.RecordID
 WHERE m.RecordDate >= '2026-01-01'
-  AND m.RecordDate <  '2026-10-08';
+  AND m.RecordDate < '2026-10-08';
 
--- Return the actual matching rows
+SHOW TABLES;
+
+-- Verify the table structures and relationships
+SHOW CREATE TABLE Patient;
+SHOW CREATE TABLE MedicalRecord;
+SHOW CREATE TABLE Prescription;
+
+-- View the sample query results
 SELECT
     p.FirstName,
     p.LastName,
@@ -107,5 +119,4 @@ INNER JOIN MedicalRecord AS m
 INNER JOIN Prescription AS pr
     ON m.RecordID = pr.RecordID
 WHERE m.RecordDate >= '2026-01-01'
-  AND m.RecordDate <  '2026-10-08'
-ORDER BY m.RecordDate;
+  AND m.RecordDate < '2026-10-08';
